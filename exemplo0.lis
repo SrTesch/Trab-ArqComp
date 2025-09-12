@@ -12,14 +12,40 @@
 	index                            800B         VARIABLE
 	linha                            800C         VARIABLE
 	coluna                           800D         VARIABLE
+	linha0                           800E           STRING
+	linha1                           805F           STRING
+	linha2                           80B0           STRING
+	linha3                           8101           STRING
+	linha4                           8152           STRING
+	linha5                           81A3           STRING
+	linha6                           81F4           STRING
+	linha7                           8245           STRING
+	linha8                           8296           STRING
+	linha9                           82E7           STRING
+	linha10                          8338           STRING
+	linha11                          8389           STRING
+	linha12                          83DA           STRING
+	linha13                          842B           STRING
+	linha14                          847C           STRING
+	linha15                          84CD           STRING
+	linha16                          851E           STRING
+	linha17                          856F           STRING
+	linha18                          85C0           STRING
+	linha19                          8611           STRING
+	linha20                          8662           STRING
+	linha21                          86B3           STRING
+	linha22                          8704           STRING
+	linha23                          8755           STRING
 	INT0                             FE00         VARIABLE
 	RotinaEusoulindo                 0002            LABEL
 	Funcao                           0005            LABEL
 	Printf                           000E            LABEL
-	Ciclo                            0016            LABEL
-	EndPrintf                        0029            LABEL
-	printchar                        0030            LABEL
-	endprintchar                     004E            LABEL
-	Main                             0053            LABEL
-	Cycle                            005B            LABEL
-	Halt                             005C            LABEL
+	Ciclo                            0014            LABEL
+	EndPrintf                        0024            LABEL
+	printchar                        002B            LABEL
+	endprintchar                     0049            LABEL
+	Main                             004E            LABEL
+	PrintLoop                        005A            LABEL
+	EndPrintLoop                     0069            LABEL
+	Cycle                            006A            LABEL
+	Halt                             006B            LABEL
