@@ -1,0 +1,25 @@
+
+	            G L O B A L   R E F E R E N C E S
+
+	             Name               Value        Type
+	==============================|=======|===============
+	WRITE                            FFFE         CONSTANT
+	INITIAL_SP                       FDFF         CONSTANT
+	CURSOR                           FFFC         CONSTANT
+	CURSOR_INIT                      FFFF         CONSTANT
+	FIM_TEXTO                        0040         CONSTANT
+	nome                             8000           STRING
+	index                            800B         VARIABLE
+	linha                            800C         VARIABLE
+	coluna                           800D         VARIABLE
+	INT0                             FE00         VARIABLE
+	RotinaEusoulindo                 0002            LABEL
+	Funcao                           0005            LABEL
+	Printf                           000E            LABEL
+	Ciclo                            0016            LABEL
+	EndPrintf                        0029            LABEL
+	printchar                        0030            LABEL
+	endprintchar                     004E            LABEL
+	Main                             0053            LABEL
+	Cycle                            005B            LABEL
+	Halt                             005C            LABEL
