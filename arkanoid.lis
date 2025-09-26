@@ -10,7 +10,7 @@
 	FIM_TEXTO                        0040         CONSTANT
 	CARAC_VAZIO                      0020         CONSTANT
 	LINHA_NAV                        0015         CONSTANT
-	CARAC_NAV                        005F         CONSTANT
+	CARAC_NAV                        002D         CONSTANT
 	TAMANHO_NAV                      000D         CONSTANT
 	CARAC_BOLA                       006F         CONSTANT
 	LINHA_TOPO                       0003         CONSTANT
@@ -18,6 +18,7 @@
 	TIMER_UNITS                      FFF6         CONSTANT
 	ACTIVATE_TIMER                   FFF7         CONSTANT
 	ON                               0001         CONSTANT
+	OFF                              0000         CONSTANT
 	index                            8000         VARIABLE
 	linha                            8001         VARIABLE
 	navpos                           8002         VARIABLE
@@ -27,53 +28,57 @@
 	dirXBola                         8006         VARIABLE
 	dirYBola                         8007         VARIABLE
 	nome                             8008           STRING
-	linha0                           8015           STRING
-	linha1                           8066           STRING
-	linha2                           80B7           STRING
-	linha3                           8108           STRING
-	linha4                           8159           STRING
-	linha5                           81AA           STRING
-	linha6                           81FB           STRING
-	linha7                           824C           STRING
-	linha8                           829D           STRING
-	linha9                           82EE           STRING
-	linha10                          833F           STRING
-	linha11                          8390           STRING
-	linha12                          83E1           STRING
-	linha13                          8432           STRING
-	linha14                          8483           STRING
-	linha15                          84D4           STRING
-	linha16                          8525           STRING
-	linha17                          8576           STRING
-	linha18                          85C7           STRING
-	linha19                          8618           STRING
-	linha20                          8669           STRING
-	linha21                          86BA           STRING
-	linha22                          870B           STRING
-	linha23                          875C           STRING
+	linha0                           8013           STRING
+	linha1                           8064           STRING
+	linha2                           80B5           STRING
+	linha3                           8106           STRING
+	linha4                           8157           STRING
+	linha5                           81A8           STRING
+	linha6                           81F9           STRING
+	linha7                           824A           STRING
+	linha8                           829B           STRING
+	linha9                           82EC           STRING
+	linha10                          833D           STRING
+	linha11                          838E           STRING
+	linha12                          83DF           STRING
+	linha13                          8430           STRING
+	linha14                          8481           STRING
+	linha15                          84D2           STRING
+	linha16                          8523           STRING
+	linha17                          8574           STRING
+	linha18                          85C5           STRING
+	linha19                          8616           STRING
+	linha20                          8667           STRING
+	linha21                          86B8           STRING
+	linha22                          8709           STRING
+	linha23                          875A           STRING
 	INT0                             FE00         VARIABLE
 	INT1                             FE01         VARIABLE
 	INT2                             FE02         VARIABLE
+	INT3                             FE03         VARIABLE
 	INT15                            FE0F         VARIABLE
 	Timer                            0002            LABEL
-	movBola                          000B            LABEL
-	InverteX                         0026            LABEL
-	ContinuaYCheck                   0029            LABEL
-	NaoBateuRaquete                  003F            LABEL
-	InverteY                         0045            LABEL
-	AtualizaPosicao                  0048            LABEL
-	MovRight                         0058            LABEL
-	endMovR                          006F            LABEL
-	MovLeft                          0073            LABEL
-	endMovL                          008B            LABEL
-	printchar                        008F            LABEL
-	Printf                           009C            LABEL
-	Ciclo                            009F            LABEL
-	EndPrintf                        00AA            LABEL
-	printMapa                        00AE            LABEL
-	PrintLoop                        00B7            LABEL
-	EndPrintLoop                     00C5            LABEL
-	ConfigureTimer                   00CB            LABEL
-	Main                             00D6            LABEL
-	Cycle                            00E2            LABEL
-	Halt                             00E3            LABEL
+	ResetBola                        0009            LABEL
+	StartTimer                       0020            LABEL
+	movBola                          0027            LABEL
+	InverteX                         0042            LABEL
+	ContinuaYCheck                   0045            LABEL
+	NaoBateuRaquete                  005B            LABEL
+	InverteY                         0069            LABEL
+	AtualizaPosicao                  006C            LABEL
+	endMovB                          0076            LABEL
+	MovRight                         007C            LABEL
+	endMovR                          009B            LABEL
+	MovLeft                          009F            LABEL
+	endMovL                          00BF            LABEL
+	printchar                        00C3            LABEL
+	Printf                           00D0            LABEL
+	Ciclo                            00D3            LABEL
+	EndPrintf                        00DE            LABEL
+	printMapa                        00E2            LABEL
+	PrintLoop                        00EB            LABEL
+	EndPrintLoop                     00F9            LABEL
+	ConfigureTimer                   00FF            LABEL
+	Main                             010A            LABEL
+	Cycle                            0116            LABEL
+	Halt                             0117            LABEL
