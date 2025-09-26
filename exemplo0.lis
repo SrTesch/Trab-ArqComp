@@ -3,59 +3,12 @@
 
 	             Name               Value        Type
 	==============================|=======|===============
-	WRITE                            FFFE         CONSTANT
+	IO_WRITE                         FFFE         CONSTANT
 	INITIAL_SP                       FDFF         CONSTANT
 	CURSOR                           FFFC         CONSTANT
 	CURSOR_INIT                      FFFF         CONSTANT
-	FIM_TEXTO                        0040         CONSTANT
-	CARAC_VAZIO                      0020         CONSTANT
-	LINHA_NAV                        0015         CONSTANT
-	CARAC_NAV                        005F         CONSTANT
-	TAMANHO_NAV                      0007         CONSTANT
-	nome                             8000           STRING
-	index                            800B         VARIABLE
-	linha                            800C         VARIABLE
-	linhaNave                        800D         VARIABLE
-	navpos                           800E         VARIABLE
-	coluna                           800F         VARIABLE
-	linha0                           8010           STRING
-	linha1                           8061           STRING
-	linha2                           80B2           STRING
-	linha3                           8103           STRING
-	linha4                           8154           STRING
-	linha5                           81A5           STRING
-	linha6                           81F6           STRING
-	linha7                           8247           STRING
-	linha8                           8298           STRING
-	linha9                           82E9           STRING
-	linha10                          833A           STRING
-	linha11                          838B           STRING
-	linha12                          83DC           STRING
-	linha13                          842D           STRING
-	linha14                          847E           STRING
-	linha15                          84CF           STRING
-	linha16                          8520           STRING
-	linha17                          8571           STRING
-	linha18                          85C2           STRING
-	linha19                          8613           STRING
-	linha20                          8664           STRING
-	linha21                          86B5           STRING
-	linha22                          8706           STRING
-	linha23                          8757           STRING
-	INT1                             FE00         VARIABLE
-	INT0                             FE01         VARIABLE
-	Funcao                           0002            LABEL
-	MovRight                         000B            LABEL
-	endMovR                          0022            LABEL
-	MovLeft                          0026            LABEL
-	endMovL                          003E            LABEL
-	printchar                        0042            LABEL
-	Printf                           004F            LABEL
-	Ciclo                            0055            LABEL
-	EndPrintf                        0065            LABEL
-	printMapa                        006C            LABEL
-	PrintLoop                        0075            LABEL
-	EndPrintLoop                     0084            LABEL
-	Main                             008A            LABEL
-	Cycle                            0094            LABEL
-	Halt                             0095            LABEL
+	LINE_POSITION                    0014         CONSTANT
+	NOME                             004A         CONSTANT
+	Main                             0002            LABEL
+	Cycle                            0016            LABEL
+	Halt                             0017            LABEL

@@ -2,90 +2,74 @@
 ; ZONA I: Definicao de constantes
 ;         Pseudo-instrucao : EQU
 ;------------------------------------------------------------------------------
-CR              EQU     0Ah
-FIM_TEXTO       EQU     '@'
-IO_READ         EQU     FFFFh
-IO_WRITE        EQU     FFFEh
-IO_STATUS       EQU     FFFDh
+WRITE	        EQU     FFFEh
 INITIAL_SP      EQU     FDFFh
-CURSOR		EQU     FFFCh
-CURSOR_INIT	EQU	FFFFh
-ROW_POSITION	EQU	0d
-COL_POSITION	EQU	0d
-ROW_SHIFT	EQU	8d
-COLUMN_SHIFT	EQU	8d
-PULA_LINHA	EQU	81d
-MAPA 		EQU      8000h
-NAVE_CORPO	EQU	'='
-LINHA_NAVE	EQU	22d
-APAGA           EQU     ' '
-BOLA            EQU     'o'
+CURSOR			EQU     FFFCh
+CURSOR_INIT		EQU     FFFFh
+FIM_TEXTO 		EQU 	'@'
+CARAC_VAZIO		EQU		' '
+LINHA_NAV		EQU		21d
+CARAC_NAV		EQU		'_'
+TAMANHO_NAV		EQU		13d
+CARAC_BOLA		EQU		'o'
+LINHA_TOPO		EQU		3d  ; Linha onde começam os blocos (limite superior da bola)
+LARGURA_TELA	EQU		80d ; Largura da tela para controle de borda
+TIMER_UNITS 	EQU 	FFF6H
+ACTIVATE_TIMER  EQU		FFF7H
+ON 				EQU		1d
 
-TIMER_UNIT	EQU	FFF6H
-ACTIVE_TIMER	EQU	FFF7H
-OFF		EQU	0d
-ON 		EQU     1
-
-DIREITA         EQU     -1d
-ESQUERDA        EQU      1d
-CIMA            EQU     -1d
-BAIXO           EQU      1d
 ;------------------------------------------------------------------------------
 ; ZONA II: definicao de variaveis
 ;          Pseudo-instrucoes : WORD - palavra (16 bits)
 ;                              STR  - sequencia de caracteres (cada ocupa 1 palavra: 16 bits).
 ;          Cada caracter ocupa 1 palavra
 ;------------------------------------------------------------------------------
-	ORIG 	8000h
-L0	STR	'################################################################################', FIM_TEXTO
-L1	STR	'#                                                                              #', FIM_TEXTO
-L2	STR	'#                                                                              #', FIM_TEXTO
-L3	STR	'#                                                                              #', FIM_TEXTO
-L4	STR	'#                                                                              #', FIM_TEXTO
-L5	STR	'#                                                                              #', FIM_TEXTO
-L6	STR	'#                                                                              #', FIM_TEXTO
-L7	STR	'#                                                                              #', FIM_TEXTO
-L8	STR	'#                                                                              #', FIM_TEXTO
-L9	STR	'#                                                                              #', FIM_TEXTO
-L10	STR	'#                                                                              #', FIM_TEXTO
-L11	STR	'#                                                                              #', FIM_TEXTO
-L12	STR	'#                                                                              #', FIM_TEXTO
-L13	STR	'#                                                                              #', FIM_TEXTO
-L14	STR	'#                                                                              #', FIM_TEXTO
-L15	STR	'#                                                                              #', FIM_TEXTO
-L16	STR	'#                                                                              #', FIM_TEXTO
-L17	STR	'#                                                                              #', FIM_TEXTO
-L18	STR	'#                                                                              #', FIM_TEXTO
-L19	STR	'#                                                                              #', FIM_TEXTO
-L20	STR	'#                                                                              #', FIM_TEXTO
-L21	STR	'#                                                                              #', FIM_TEXTO
-L22	STR	'#                                                                              #', FIM_TEXTO
-L23	STR	'################################################################################', FIM_TEXTO
 
-RowIndex		WORD	0d
-ColumnIndex		WORD	0d
+		ORIG	8000h
+index 		WORD	0d
+linha 		WORD 	0d
+navpos		WORD	33d
+colunaBola	WORD	39d
+linhaBola	WORD	19d
+Score		WORD	0
+dirXBola	WORD	2d  ; 1 para direita, -1 (FFFFh) para esquerda
+dirYBola	WORD	-1d ; -1 para cima, 1 para baixo
+nome 		STR		'José Renato', FIM_TEXTO
+linha0 		STR 	'--------------------------------------------------------------------------------', FIM_TEXTO
+linha1 		STR 	'   Score: XYZ                                                        Lifes: 3   ', FIM_TEXTO
+linha2 		STR 	'--------------------------------------------------------------------------------', FIM_TEXTO
+linha3 		STR 	'         B X B X                                      B X B X                   ', FIM_TEXTO
+linha4 		STR 	'                               B X B X B X                                      ', FIM_TEXTO
+linha5 		STR 	'         B X B X                                      B X B X                   ', FIM_TEXTO
+linha6 		STR 	'                               B X B X B X                                      ', FIM_TEXTO
+linha7 		STR 	'         B X B X                                      B X B X                   ', FIM_TEXTO
+linha8 		STR 	'                               B X B X B X                                      ', FIM_TEXTO
+linha9 		STR 	'         B X B X                                      B X B X                   ', FIM_TEXTO
+linha10 	STR 	'                               B X B X B X                                      ', FIM_TEXTO
+linha11 	STR 	'         B X B X                                      B X B X                   ', FIM_TEXTO
+linha12 	STR 	'                               B X B X B X                                      ', FIM_TEXTO
+linha13 	STR 	'                                                                                ', FIM_TEXTO
+linha14 	STR 	'                                                                                ', FIM_TEXTO
+linha15 	STR 	'                                                                                ', FIM_TEXTO
+linha16 	STR 	'                                                                                ', FIM_TEXTO
+linha17 	STR 	'                                                                                ', FIM_TEXTO
+linha18 	STR 	'                                                                                ', FIM_TEXTO
+linha19 	STR 	'                                       o                                        ', FIM_TEXTO
+linha20 	STR 	'                                                                                ', FIM_TEXTO
+linha21 	STR 	'                                 _____________                                  ', FIM_TEXTO
+linha22 	STR 	'                                                                                ', FIM_TEXTO
+linha23		STR 	'--------------------------------------------------------------------------------', FIM_TEXTO
 
-Corpo_Nave		STR		'=========='	
-Tamanho_Corpo	WORD	10d
-Posicao_NaveI	WORD	22d
-Posicao_NaveF	WORD	32d
 
-LinhaBola       WORD    21d
-ColunaBola      WORD    26d
-Teste           WORD    1d
-
-DirLinha    WORD   -1d    ; -1 = sobe, 1 = desce
-DirColuna   WORD    1d    ; -1 = esqu, 1 = dir
 ;------------------------------------------------------------------------------
 ; ZONA III: definicao de tabela de interrupções
 ;------------------------------------------------------------------------------
-	ORIG    FE00h
-INT0    WORD    Esqueda
-INT1    WORD    Direita
-	                
-        ORIG    FE0Fh
-INT15	WORD	Timer
-
+		ORIG	FE00h
+INT0	WORD	MovLeft
+INT1	WORD	MovRight
+INT2	WORD	movBola
+			ORIG 	FE0Fh
+INT15       WORD    Timer
 
 
 ;------------------------------------------------------------------------------
@@ -96,348 +80,255 @@ INT15	WORD	Timer
                 ORIG    0000h
                 JMP     Main
 
-;------------------------------------------------------------------------------  
-; Timer
-;------------------------------------------------------------------------------  
 Timer:  PUSH R1
-	PUSH R2
-	PUSH R3
+		PUSH R2
 
-        CALL apagaBola
-        ;MOV R1, M[DirLinha]
-        ;ADD M[LinhaBola], R1   ; Atualiza a posição da linha
+		CALL movBola
 
-        ;MOV R2, M[DirColuna]
-        ;ADD M[ColunaBola], R2  ; Atualiza a posição da coluna
+		CALL ConfigureTimer
 
+		POP R2
+		POP R1
 
-        ;CALL MoveCima
-        CALL DirecaoBolaY
-        CALL ConfTimer
+		RTI
 
-	POP R3
-	POP R2
-	POP R1 
-	RTI
+;======================================
+; movBola: Movimenta a bola, verificando colisões com paredes e raquete
+; R1: CHAR A SER ESCRITO
+; R2: LINHA DA BOLA
+; R3: COLUNA DA BOLA
+; R4: DIREÇÃO EM X
+; R5: DIREÇÃO EM Y
+;======================================
+movBola: 	PUSH R1
+			PUSH R2
+			PUSH R3
+			PUSH R4
+			PUSH R5
 
-;------------------------------------------------------------------------------
-;ConfTimer
-;------------------------------------------------------------------------------
+			; 1. Carrega posição e direção da bola
+			MOV R2, M[linhaBola]   ; R2 = linha atual
+			MOV R3, M[colunaBola]  ; R3 = coluna atual
 
-ConfTimer:PUSH R1
-	PUSH R2
-	PUSH R3
+			; 2. Apaga a bola da posição atual
+			MOV R1, CARAC_VAZIO
+			CALL printchar
 
-	MOV R1, 5d
-	MOV M[TIMER_UNIT], R1
+			; 3. Carrega direções para os registradores
+			MOV R4, M[dirXBola] ; R4 = direção X
+			MOV R5, M[dirYBola] ; R5 = direção Y
 
-	MOV R1, ON
-	MOV	M[ACTIVE_TIMER], R1
+			CMP R3, 1d
+			JMP.z InverteX
+			CMP R3, 79d
+			JMP.z InverteX
+			JMP ContinuaYCheck ; Se não colidiu, continua a verificação
 
+InverteX:	NEG R4 ; Inverte a direção X (-1 vira 1, 1 vira -1)
+			MOV M[dirXBola], R4
 
-	POP R3
-	POP R2
-	POP R1
-	RET 
-
-
-
-;------------------------------------------------------------------------------
-;Função imprimi mapa
-;------------------------------------------------------------------------------
-
-Maprint:    PUSH R1
-            PUSH R2
-            PUSH R3
-
-            MOV R1, L0          ; Primeira linha
-            MOV R2, 0           ; Contador de linhas
-
-cicloMap:   CALL print          ; Imprime linha atual
-            INC R2              ; Próxima linha
-
-            CMP R2, 24d
-            JMP.Z fimMap
-            
-            ADD R1, PULA_LINHA  ; Próxima linha na memória
-            MOV M[RowIndex], R2 ; Atualiza índice da linha
-
-            JMP cicloMap
-
-fimMap:     POP R3
-            POP R2
-            POP R1
-            RET
-
-;------------------------------------------------------------------------------
-; Função print para o mapa
-;------------------------------------------------------------------------------
-
-print:	    PUSH 	R1	; &String inicial = L0
-			PUSH 	R2	
-			PUSH 	R3	 
-			PUSH 	R4 ; valor do R1
+			; Colisão com parede de cima (logo abaixo do placar)
+ContinuaYCheck: CMP R2, LINHA_TOPO
+				JMP.z 	InverteY
 
 
-printciclo:	MOV 	R4, M[ R1 ] ; valor do que esta em R1
+			CMP R2, 20d ; A bola está na linha logo acima da raquete?
+			JMP.nz NaoBateuRaquete ; Se não, pula a verificação da raquete
 
-			CMP 	R4, FIM_TEXTO
-			JMP.Z 	Endprint
+			; Se está na linha certa, verifica se a coluna da bola está dentro da raquete
+			MOV R1, M[navpos] ; R1 = Início da raquete
+			CMP R3, R1 ; A bola está à direita ou em cima do início da raquete?
+			JMP.n NaoBateuRaquete ; Se for menor (à esquerda), não bateu
 
-			MOV R2, M[RowIndex]
+			ADD R1, TAMANHO_NAV ; R1 = Fim da raquete
+			CMP R3, R1 ; A bola está à esquerda do fim da raquete?
+			JMP.nn NaoBateuRaquete ; Se for maior ou igual, não bateu
+			JMP.z  NaoBateuRaquete
 
-			SHL R2,	ROW_SHIFT ; linha
-			OR  R2, R3
-			MOV M[ CURSOR ], R2
-			MOV M[ IO_WRITE ], R4
+			; Se passou em todas as verificações, BATEU na raquete!
+			JMP InverteY
 
-			INC R3 ; avança para proxima coluna
-			INC R1 ; incrementa para a próxima letra da str
+			; Verificação de Game Over (bola caiu no chão)
+NaoBateuRaquete:	CMP R2, 22d
+					JMP.z  Halt ; Se a linha da bola for > 22, o jogo para
 
-			JMP printciclo
+					JMP AtualizaPosicao
+
+InverteY:			NEG R5 ; Inverte a direção Y
+					MOV M[dirYBola], R5
+
+			; 5. Atualiza as coordenadas da bola com base na direção
+AtualizaPosicao:	ADD R2, R5 ; novaLinha = linhaAtual + dirY
+					ADD R3, R4 ; novaColuna = colunaAtual + dirX
+					MOV M[linhaBola], R2
+					MOV M[colunaBola], R3
+
+			; 6. Desenha a bola na nova posição
+					MOV R1, CARAC_BOLA
+					CALL printchar
+
+			; 7. Restaura registradores e retorna da interrupção
+					POP R5
+					POP R4
+					POP R3
+					POP R2
+					POP R1
+					RET
 
 
-Endprint:POP R4
+;=========================================================================
+; R1 : caracter
+; R2 : linha da nave
+; R3 : coluna a ser printada
+;=========================================================================
+
+MovRight:	PUSH	R1
+			PUSH 	R2
+			PUSH	R3
+
+			MOV 	R3,M [ navpos ]
+			CMP 	R3, 67d
+			JMP.z 	endMovR
+			MOV		R1,CARAC_VAZIO
+			MOV 	R2, LINHA_NAV
+			CALL 	printchar
+			MOV 	R1,CARAC_NAV
+			ADD		R3, TAMANHO_NAV
+			CALL 	printchar
+			INC 	M[navpos]
+			
+endMovR:	POP		R3
+			POP		R2
+			POP		R1
+			RTI 
+;=========================================================================
+; R1 : caracter
+; R2 : linha da nave
+; R3 : coluna a ser printada
+;=========================================================================
+
+MovLeft:	PUSH	R1
+			PUSH 	R2
+			PUSH	R3
+
+			MOV 	R3,M [ navpos ]
+			CMP 	R3, 0
+			JMP.z 	endMovL
+			MOV		R1,CARAC_NAV
+			MOV 	R2, LINHA_NAV
+			DEC 	R3
+			CALL 	printchar
+			MOV 	R1,CARAC_VAZIO
+			ADD		R3, TAMANHO_NAV
+			CALL 	printchar
+			DEC 	M[navpos]
+			
+endMovL:	POP		R3
+			POP		R2
+			POP		R1
+			RTI 
+
+;=================================
+;printchar para movimentar a nav
+;=================================
+printchar:		PUSH 	R1
+				PUSH 	R2
+				PUSH 	R3
+
+				SHL		R2, 8d
+				OR		R2,R3
+				MOV		M[CURSOR], R2
+				MOV 	M[WRITE], R1
+
+
+				POP 	R3
+				POP 	R2
+				POP		R1
+				RET
+
+;=========================================================================
+; Printf
+; R1 endereço da string -> CARACTER ATUAL
+; R2 caracter atual  -> LINHA
+; R3 linha -> COLUNA
+; R4 coluna -> ENDEREÇO DA STRING
+; R5 contador
+;=========================================================================
+Printf:		PUSH R1
+			PUSH R3
+			PUSH R4
+			
+
+Ciclo:    	MOV 	R1, M[R4]
+			CMP     R1, FIM_TEXTO    ; fim do texto
+        	JMP.z   EndPrintf        
+
+        	CALL printchar   ; escreve caractere
+
+        	INC     R4               ; próximo caractere da string
+        	INC     R3               ; próxima coluna
+        	JMP     Ciclo
+
+EndPrintf:	POP R4
 			POP R3
-			POP R2
 			POP R1
+
 			RET
 
 ;------------------------------------------------------------------------------
-;Direita
+;PRINTMAPA: printa O MAPA MOV     R2, M[R1] INTEIRO  
 ;------------------------------------------------------------------------------
-Direita:PUSH R1
-        PUSH R2
+printMapa:		PUSH 	R1
+				PUSH  	R2
+				PUSH 	R3
+				PUSH 	R4
+				PUSH 	R5
 
-        MOV R1, LINHA_NAVE       
-        SHL R1, ROW_SHIFT
-        OR R1, M[Posicao_NaveI] 
+				MOV     R4, linha0          ; R4 armazena o endereço da string atual, começando com linha0
+        		MOV     R5, 0d              ; R5 é o contador de linha (começa em 0)
 
-        MOV M[CURSOR], R1
-        MOV R2, APAGA             
-        MOV M[IO_WRITE], R2
+PrintLoop:		CMP     R5, 24d             ; Já imprimiu as 24 linhas (0 a 23)?
+        		JMP.z   EndPrintLoop        ; Se sim, sai do loop
 
-        INC M[Posicao_NaveI]
-        INC M[Posicao_NaveF]
-        
-        CALL Imprimenave
+        		MOV     R2, R5              ; Define a linha de impressão (0, 1, 2, ...)
+        		MOV     R3, 0d              ; Define a coluna de impressão como 0
+        		CALL    Printf              ; Chama a rotina para imprimir a string
 
-        POP R2
-        POP R1
-        RTI
+        		ADD     R4, 81d             ; Avança o ponteiro para a próxima string (80 chars + 1 terminador = 81 palavras)
+        		INC     R5                  ; Incrementa o contador de linha
+        		JMP     PrintLoop           ; Repete o loop
 
-
-;------------------------------------------------------------------------------
-;Esquerda
-;------------------------------------------------------------------------------
-Esqueda:PUSH R1
-        PUSH R2
-
-
-        MOV R1, LINHA_NAVE       
-        SHL R1, ROW_SHIFT
-        OR R1, M[Posicao_NaveF] 
-        
-        MOV M[CURSOR], R1
-        MOV R2, APAGA             
-        MOV M[IO_WRITE], R3
-
-        DEC M[Posicao_NaveF]
-        DEC M[Posicao_NaveI]
-        CALL Imprimenave
-
-        POP R2
-        POP R1
-        RTI
-
-;------------------------------------------------------------------------------
-;Imprime nave
-;------------------------------------------------------------------------------
-Imprimenave:    PUSH R1
-                PUSH R2
-                PUSH R3
-                PUSH R4
-
-                MOV R1, Corpo_Nave      ; Ponteiro para string da nave
-                MOV R2, 0               ; Contador inicia em 0
-
-Loopnave:       CMP R2, M[Tamanho_Corpo] ; Compara com tamanho
-                JMP.Z Fimcorponave
-                
-                ; Calcula posição do cursor
-                MOV R4, M[Posicao_NaveI] ; Coluna inicial
-                ADD R4, R2              ; Coluna + offset
-                
-                MOV R3, LINHA_NAVE      ; Linha fixa
-                SHL R3, ROW_SHIFT       ; Linha << 8
-                OR R3, R4               ; Combina linha e coluna
-                
-                ; Posiciona cursor e escreve
-                MOV M[CURSOR], R3
-                MOV R3, M[R1]           ; Pega caractere da string
-                MOV M[IO_WRITE], R3     ; ESCREVE no display
-                
-                ; Prepara próximo
-                INC R1                  ; Próximo caractere
-                INC R2                  ; Incrementa contador
-                JMP Loopnave
-
-Fimcorponave:   POP R4
-                POP R3
-                POP R2
-                POP R1
-                RET
-
-;------------------------------------------------------------------------------
-;DirecaoBola
-;------------------------------------------------------------------------------
-DirecaoBolaY:   PUSH R1
-
-                MOV R1, M[DirLinha]
-                CMP R1, CIMA
-                CALL.Z MoveCima
-
-                CMP R1, CIMA
-                CALL.Z MoveBaixo
-
-                POP R1
-                RET
+EndPrintLoop: 	POP 	R5
+				POP 	R4
+				POP 	R3
+				POP 	R2
+				POP 	R1
+				RET
 
 
-;------------------------------------------------------------------------------
-;Função
-;------------------------------------------------------------------------------
 
-MoveCima:       PUSH R1
-		PUSH R2
-		PUSH R3
-                PUSH R4
+ConfigureTimer: PUSH R1 
 
-                MOV R1, M[LinhaBola]
-                MOV R2, M[ColunaBola]
+				MOV R1, 5d
+				MOV M[ TIMER_UNITS ], R1
+				MOV R1, ON
+				MOV M[ ACTIVATE_TIMER ], R1
 
-ColideCima:     DEC R1
+				POP R1
+				RET
+;=============================================================
+; MAINNNNNNNNNNNNNNNNNNNNNN
+;=============================================================
 
-                MOV R4, R1
-                MOV R3, PULA_LINHA
+Main:		ENI
+        	MOV     R1, INITIAL_SP
+        	MOV     SP, R1              ; Inicializa a pilha (Stack Pointer)
+        	MOV     R1, CURSOR_INIT     ; Inicializa o cursor para limpar a tela
+        	MOV     M[CURSOR], R1
 
-                MUL R3, R1
-                ADD R2, R1
-                ADD R2, MAPA
+			CALL	printMapa
 
-                MOV R2, M [R2]
-                CMP R2, '#'
-                JMP.Z InverteCima 
+			CALL 	ConfigureTimer
 
-ContinuaCima:   MOV M[LinhaBola], R4                
-
-FimBolaCima:	CALL PrintBola
-                POP R4
-                POP R3
-		POP R2
-		POP R1
-		RET 
-
-InverteCima:    MOV R4, BAIXO
-                MOV M[DirLinha], R4
-                JMP FimBolaCima
-
-;------------------------------------------------------------------------------
-;Baixo
-;------------------------------------------------------------------------------
-
-MoveBaixo:      PUSH R1
-		PUSH R2
-		PUSH R3
-                PUSH R4
-
-                MOV R1, M[LinhaBola]
-                MOV R2, M[ColunaBola]
-
-ColideBaixo:    INC R1
-
-                MOV R4, R1
-                MOV R3, PULA_LINHA
-
-                MUL R3, R1
-                ADD R2, R1
-                ADD R2, MAPA
-
-                MOV R2, M [R2]
-                CMP R2, '#'
-                JMP.Z InverteBaixo 
-
-ContinuaBaixo:  MOV M[LinhaBola], R4                
-
-FimBolaBaixo:	CALL PrintBola
-                POP R4
-                POP R3
-		POP R2
-		POP R1
-		RET 
-
-InverteBaixo:   MOV R4, BAIXO
-                MOV M[DirLinha], R4
-                JMP FimBolaBaixo
-
-
-;------------------------------------------------------------------------------
-;PrintBola e apagaBola
-;------------------------------------------------------------------------------
-PrintBola:      PUSH R1
-                PUSH R2
-
-                MOV R1, M[ColunaBola]
-                MOV R2, M[LinhaBola]
-
-                SHL R2,	ROW_SHIFT ; linha
-		OR  R1, R2 
-		MOV M[ CURSOR ], R1
-
-                MOV R2, BOLA
-		MOV M[ IO_WRITE ], R2
-
-                POP R2
-                POP R1
-                RET
-
-;------------------------------------------------------------------------------
-;apagaBola
-;------------------------------------------------------------------------------
-apagaBola:      PUSH R1
-                PUSH R2
-
-                MOV R1, M[ColunaBola]
-                MOV R2, M[LinhaBola]
-
-                SHL R2,	ROW_SHIFT ; linha
-		OR  R1, R2 
-		MOV M[ CURSOR ], R1
-
-                MOV R2, APAGA
-		MOV M[ IO_WRITE ], R2
-
-                POP R2
-                POP R1
-                RET
-
-
-Main:ENI
-
-	MOV		R1, INITIAL_SP
-	MOV		SP, R1		 		; We need to initialize the stack
-	MOV		R1, CURSOR_INIT		; We need to initialize the cursor 
-	MOV		M[ CURSOR ], R1		; with value CURSOR_INIT
-
-	CALL Maprint
-        CALL Imprimenave
-        CALL PrintBola
-
-        CALL ConfTimer
-
-        
-	
-
-;./p3as-win arkanoid.as; java -jar p3sim.jar arkanoid.exe
-Cycle: 			BR		Cycle	
-Halt:           BR		Halt
+Cycle:	BR		Cycle	
+Halt:   BR		Halt
