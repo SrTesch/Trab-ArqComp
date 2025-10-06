@@ -39,7 +39,7 @@ linha0 		STR 	'-----------------------------------------------------------------
 linha1 		STR 	'   Score: XYZ                                                        Lifes: 3   ', FIM_TEXTO
 linha2 		STR 	'--------------------------------------------------------------------------------', FIM_TEXTO
 linha3 		STR 	'            BXBX                                           BXBX                 ', FIM_TEXTO
-linha4 		STR 	'                                    BXBXBX                                      ', FIM_TEXTO
+linha4 		STR 	'                                    ######                                      ', FIM_TEXTO
 linha5 		STR 	'            BXBX                                           BXBX                 ', FIM_TEXTO
 linha6 		STR 	'                                    BXBXBX                                      ', FIM_TEXTO
 linha7 		STR 	'            BXBX                                           BXBX                 ', FIM_TEXTO
@@ -59,7 +59,7 @@ linha20 	STR 	'                                                                 
 linha21 	STR 	'                                 -------------                                  ', FIM_TEXTO
 linha22 	STR 	'                                                                                ', FIM_TEXTO
 linha23		STR 	'--------------------------------------------------------------------------------', FIM_TEXTO
-
+game_state 	WORD	1
 
 ;------------------------------------------------------------------------------
 ; ZONA III: definicao de tabela de interrupções
@@ -78,7 +78,6 @@ INT15   WORD    Timer
 ;        conjunto de instrucoes Assembly, ordenadas de forma a realizar
 ;        as funcoes pretendidas
 ;------------------------------------------------------------------------------
-
 ;======================================
 ; TIMER: a CADA 0.5s CHAMA A FUNÇÃO DE MOVIMENTAÇÃO DA BOLA
 ;======================================
