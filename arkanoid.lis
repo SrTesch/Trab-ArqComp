@@ -55,6 +55,9 @@
 	game_state                       87AB         VARIABLE
 	Vidas                            87AC         VARIABLE
 	MsgGameOver                      87AD           STRING
+	ComboCount                       87B7         VARIABLE
+	CharBlocoB                       0042         CONSTANT
+	CharBlocoX                       0058         CONSTANT
 	INT0                             FE00         VARIABLE
 	INT1                             FE01         VARIABLE
 	INT2                             FE02         VARIABLE
@@ -70,26 +73,34 @@
 	ShowGameOver                     0053            LABEL
 	CicloGO                          005D            LABEL
 	FimShowGO                        0068            LABEL
-	movBola                          006D            LABEL
-	InverteX                         0088            LABEL
-	ContinuaYCheck                   008B            LABEL
-	NaoBateuRaquete                  00A1            LABEL
-	MorreuDeVez                      00BA            LABEL
-	InverteY                         00C6            LABEL
-	AtualizaPosicao                  00C9            LABEL
-	endMovB                          00D3            LABEL
-	MovRight                         00D9            LABEL
-	endMovR                          00F8            LABEL
-	MovLeft                          00FC            LABEL
-	endMovL                          011C            LABEL
-	printchar                        0120            LABEL
-	Printf                           012D            LABEL
-	Ciclo                            0130            LABEL
-	EndPrintf                        013B            LABEL
-	printMapa                        013F            LABEL
-	PrintLoop                        0148            LABEL
-	EndPrintLoop                     0156            LABEL
-	ConfigureTimer                   015C            LABEL
-	Main                             0167            LABEL
-	Cycle                            0173            LABEL
-	Halt                             0174            LABEL
+	CalcEndereco                     006D            LABEL
+	TrataColisaoBloco                0076            LABEL
+	movBola                          0091            LABEL
+	BateuBlocoX                      00B4            LABEL
+	SlideY_NoX                       00D1            LABEL
+	VerificaParedeX                  00D9            LABEL
+	InverteX_Wall                    00E5            LABEL
+	FimCheckX                        00E8            LABEL
+	BateuBlocoY                      00FA            LABEL
+	VerificaTeto                     0101            LABEL
+	CheckChao                        0119            LABEL
+	MorreuDeVez                      0136            LABEL
+	InverteY_Wall                    013E            LABEL
+	ConfirmaMovY                     0143            LABEL
+	FimCheckY                        0145            LABEL
+	SaiMovBola                       014D            LABEL
+	MovRight                         0155            LABEL
+	endMovR                          0174            LABEL
+	MovLeft                          0178            LABEL
+	endMovL                          0198            LABEL
+	printchar                        019C            LABEL
+	Printf                           01A9            LABEL
+	Ciclo                            01AC            LABEL
+	EndPrintf                        01B7            LABEL
+	printMapa                        01BB            LABEL
+	PrintLoop                        01C4            LABEL
+	EndPrintLoop                     01D2            LABEL
+	ConfigureTimer                   01D8            LABEL
+	Main                             01E3            LABEL
+	Cycle                            01EF            LABEL
+	Halt                             01F0            LABEL

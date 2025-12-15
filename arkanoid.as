@@ -62,6 +62,9 @@ linha23		STR 	'-----------------------------------------------------------------
 game_state 	WORD	1d
 Vidas       WORD    3d
 MsgGameOver STR     'GAME OVER', '@';
+ComboCount  WORD    1d      ; Multiplicador de pontos (inicia em 1)
+CharBlocoB  EQU     'B'     ; Caracter do bloco tipo 1
+CharBlocoX  EQU     'X'     ; Caracter do bloco tipo 2
 ;------------------------------------------------------------------------------
 ; ZONA III: definicao de tabela de interrupções
 ;------------------------------------------------------------------------------
@@ -189,117 +192,213 @@ FimShowGO:      POP R4
                 POP R1
                 RET
 
+;=========================================================================
+; CalcEndereco: Calcula o endereço de memória de uma coordenada (L, C)
+; Entrada: R2 (Linha), R3 (Coluna) -> Saída: R6 (Endereço)
+;=========================================================================
+CalcEndereco:   PUSH R2
+                MOV R6, 81d
+                MUL R2, R6
+                ADD R6, R3
+                ADD R6, linha0
+                POP R2
+                RET
+
+;=========================================================================
+; TrataColisaoBloco: Apaga bloco, aumenta score e combo
+;=========================================================================
+TrataColisaoBloco: PUSH R1
+                   PUSH R4
+                   PUSH R5
+                   
+                   MOV R1, CARAC_VAZIO
+                   MOV M[R6], R1        ; Apaga da memória
+                   CALL printchar       ; Apaga da tela
+
+                   ; Atualiza Score (Score + 10 * Combo)
+                   MOV R4, M[ComboCount]
+                   MOV R5, 10d
+                   MUL R5, R4
+                   MOV R4, M[Score]
+                   ADD R4, R5
+                   MOV M[Score], R4
+
+                   ; Aumenta Combo
+                   MOV R1, M[ComboCount]
+                   INC R1
+                   MOV M[ComboCount], R1
+
+                   POP R5
+                   POP R4
+                   POP R1
+                   RET
+
 ;======================================
-; movBola: Movimenta a bola, verificando colisões com paredes e raquete
-; R1: CHAR A SER ESCRITO
-; R2: LINHA DA BOLA
-; R3: COLUNA DA BOLA
-; R4: DIREÇÃO EM X
-; R5: DIREÇÃO EM Y
+; movBola: Física com Check "XBX" (Coluna Anterior)
 ;======================================
-movBola: 	PUSH R1
-			PUSH R2
-			PUSH R3
-			PUSH R4
-			PUSH R5
+movBola:    PUSH R1
+            PUSH R2
+            PUSH R3
+            PUSH R4
+            PUSH R5
+            PUSH R6
+            PUSH R7
 
-			; 1. Carrega posição e direção da bola
-			MOV R2, M[linhaBola]   ; R2 = linha atual
-			MOV R3, M[colunaBola]  ; R3 = coluna atual
+            ; Apaga bola atual
+            MOV R2, M[linhaBola]
+            MOV R3, M[colunaBola]
+            MOV R1, CARAC_VAZIO
+            CALL printchar
 
-			; 2. Apaga a bola da posição atual
-			MOV R1, CARAC_VAZIO
-			CALL printchar
+            MOV R4, M[dirXBola]
+            MOV R5, M[dirYBola]
 
-			; 3. Carrega direções para os registradores
-			MOV R4, M[dirXBola] ; R4 = direção X
-			MOV R5, M[dirYBola] ; R5 = direção Y
+            ; ================= EIXO X =================
+            MOV R3, M[colunaBola]
+            ADD R3, R4              ; R3 = Próximo X
 
-			CMP R3, 1d
-			JMP.z InverteX
-			CMP R3, 79d
-			JMP.z InverteX
-			JMP ContinuaYCheck ; Se não colidiu, continua a verificação
+            ; Verifica Bloco X (O que vamos bater)
+            CALL CalcEndereco
+            MOV R1, M[R6]
+            CMP R1, CharBlocoB
+            JMP.Z BateuBlocoX
+            CMP R1, CharBlocoX
+            JMP.Z BateuBlocoX
+            JMP VerificaParedeX
 
-InverteX:	NEG R4 ; Inverte a direção X (-1 vira 1, 1 vira -1)
-			MOV M[dirXBola], R4
+BateuBlocoX: CALL TrataColisaoBloco ; Destrói o bloco da frente
+
+            ; --- LÓGICA XBX (Verifica Coluna Anterior) ---
+            PUSH R2
+            PUSH R3
+            PUSH R6
+            
+            MOV R2, M[linhaBola] ; Mesma Linha
+            MOV R3, M[colunaBola]
+            SUB R3, R4           ; Coluna Anterior (Onde viemos: Col - DirX)
+            
+            CALL CalcEndereco    ; Verifica o que tem atrás da bola
+            MOV R6, M[R6]
+            
+            CMP R6, CharBlocoB   ; Tem bloco atrás?
+            JMP.Z SlideY_NoX
+            CMP R6, CharBlocoX   ; Tem bloco atrás?
+            JMP.Z SlideY_NoX
+            
+            ; --- Colisão Padrão (Sem bloco atrás) ---
+            POP R6
+            POP R3
+            POP R2
+            NEG R4               ; Inverte X (Bate e volta)
+            MOV M[dirXBola], R4
+            JMP FimCheckX
+
+ ; --- Caso XBX (Tem bloco atrás) ---
+            ; Não inverte X (Continua andando para o espaço vazio que abriu)
+            ; Inverte apenas Y (efeito de deslizar/quicar verticalmente)
+SlideY_NoX: POP R6
+            POP R3
+            POP R2
+            NEG R5               
+            MOV M[dirYBola], R5
+            JMP FimCheckX           
 
 
-			; Colisão com parede de cima (logo abaixo do placar)
-ContinuaYCheck: CMP R2, LINHA_TOPO
-				JMP.z 	InverteY
+VerificaParedeX: CMP R3, 1d
+                 JMP.Z InverteX_Wall
+                 CMP R3, 79d
+                 JMP.Z InverteX_Wall
+                 
+                 ; Caminho livre: Atualiza posição X
+                 MOV M[colunaBola], R3
+                 JMP FimCheckX
 
-			CMP R2, 20d ; Linha logo acima da raquete?
-			JMP.nz NaoBateuRaquete ; Se não, pula a verificação da raquete
+InverteX_Wall:   NEG R4
+                 MOV M[dirXBola], R4
 
-			; Se está na linha certa, verifica se a coluna da bola está dentro da raquete
-			MOV R1, M[navpos] ; R1 = Início da raquete
-			CMP R3, R1 ; A bola está à direita ou em cima do início da raquete?
-			JMP.n NaoBateuRaquete ; Se for menor (à esquerda), não bateu (JMP if negative)
+            ; ================= EIXO Y =================
+FimCheckX:      MOV R2, M[linhaBola]    ; Início da verificação Y
+                ADD R2, R5              ; R2 = Próximo Y
+                MOV R3, M[colunaBola]   ; Usa X (atualizado ou não)
 
-			ADD R1, TAMANHO_NAV ; R1 = Fim da raquete
-			CMP R3, R1 ; A bola está à esquerda do fim da raquete?
-			JMP.nn NaoBateuRaquete ; Se for maior ou igual, não bateu (JMP if not negative)
-			JMP.z  NaoBateuRaquete
+            ; Verifica Bloco Y
+            CALL CalcEndereco
+            MOV R1, M[R6]
+            CMP R1, CharBlocoB
+            JMP.Z BateuBlocoY
+            CMP R1, CharBlocoX
+            JMP.Z BateuBlocoY
+            JMP VerificaTeto
 
-			; Se passou em todas as verificações, BATEU na raquete!
-			JMP InverteY
+BateuBlocoY:    CALL TrataColisaoBloco
+                NEG R5
+                MOV M[dirYBola], R5
+                JMP FimCheckY
 
-			; Verificação de Game Over (bola caiu no chão)
-; Verificação de bola no chão
-NaoBateuRaquete:    CMP R2, 21d
-                    JMP.nz AtualizaPosicao ; Se não bateu no fundo, segue o jogo normal
+VerificaTeto:   CMP R2, LINHA_TOPO
+                JMP.Z InverteY_Wall
 
-                    ; --- BOLA CAIU NO FUNDO ---
-                    ; 1. Decrementa Vida
-                    MOV R1, M[Vidas]
-                    DEC R1
-                    MOV M[Vidas], R1      ; Salva nova vida na memória
-                    
-                    ; 2. Atualiza o placar
-                    CALL AtualizaVidas
-                    
-                    ; 3. Verifica se acabou as vidas (R1 ainda tem o valor da vida aqui)
-                    CMP R1, 0
-                    JMP.Z MorreuDeVez
-                    MOV R2, OFF
-					MOV M[ACTIVATE_TIMER], R2
-					MOV M[game_state], R2
-                    CALL ResetPosBola
-                    
-                    ; NÃO desligamos o timer. O jogo continua fluindo.
-                    JMP endMovB           ; Sai da rotina, esperando o próximo ciclo do timer
+            ; Verifica Raquete e Chão
+                CMP R2, 20d
+                JMP.NZ CheckChao
 
-MorreuDeVez:        MOV R1, OFF
-                    MOV M[game_state], R1  ; Avisa a flag global que o jogo acabou
-                    
-                    MOV R1, CARAC_VAZIO    ; Apaga a bola que caiu
-                    CALL printchar
-                    
-                    CALL ShowGameOver      ; Mostra mensagem
-                    
-                    ; IMPORTANTE: Não faça POP R1 aqui, pois endMovB já faz os POPs de todos
-                    JMP endMovB            
+            ; Lógica Raquete
+                MOV R1, M[navpos]
+                CMP R3, R1
+                JMP.N CheckChao
+                ADD R1, TAMANHO_NAV
+                CMP R3, R1
+                JMP.NN CheckChao
 
-InverteY:           NEG R5 ; Inverte a direção Y
-                    MOV M[dirYBola], R5
+            ; Bateu na Raquete
+                MOV R1, 1d
+                MOV M[ComboCount], R1   ; Reseta Combo
+                JMP InverteY_Wall
 
-					; Atualiza as coordenadas da bola com base na direção
-AtualizaPosicao:	ADD R2, R5 ; novaLinha = linhaAtual + dirY
-					ADD R3, R4 ; novaColuna = colunaAtual + dirX
-					MOV M[linhaBola], R2
-					MOV M[colunaBola], R3
+CheckChao:      CMP R2, 21d
+                JMP.NZ ConfirmaMovY
+                
+                MOV R1, 1d
+                MOV M[ComboCount], R1
+                
+                MOV R1, M[Vidas]
+                DEC R1
+                MOV M[Vidas], R1
+                CALL AtualizaVidas
+                
+                CMP R1, 0
+                JMP.Z MorreuDeVez
+                
+                MOV R2, OFF
+                MOV M[ACTIVATE_TIMER], R2
+                MOV M[game_state], R2
+                CALL ResetPosBola
+                JMP SaiMovBola
 
-					; Desenha a bola na nova posição
-					MOV R1, CARAC_BOLA
-					CALL printchar
+MorreuDeVez:    MOV R1, OFF
+                MOV M[game_state], R1
+                CALL ShowGameOver
+                JMP SaiMovBola
 
-endMovB:			POP R5
-					POP R4
-					POP R3
-					POP R2
-					POP R1
-					RET
+InverteY_Wall:  NEG R5
+                MOV M[dirYBola], R5
+                JMP FimCheckY
+
+ConfirmaMovY:   MOV M[linhaBola], R2
+
+FimCheckY:      MOV R2, M[linhaBola]
+                MOV R3, M[colunaBola]
+                MOV R1, CARAC_BOLA
+                CALL printchar
+
+SaiMovBola:     POP R7
+                POP R6
+                POP R5
+                POP R4
+                POP R3
+                POP R2
+                POP R1
+                RET
 
 
 ;=========================================================================
