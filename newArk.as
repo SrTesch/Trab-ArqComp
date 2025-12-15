@@ -32,34 +32,10 @@ navpos		WORD	33d
 colunaBola	WORD	39d
 linhaBola	WORD	19d
 Score		WORD	0d
-finalizou 	WORD 	0d
 dirXBola	WORD	2d  ; 1 para direita, -1 (FFFFh) para esquerda
 dirYBola	WORD	-1d ; -1 para cima, 1 para baixo
 nome 		STR		'Eusoulindo', FIM_TEXTO
-linha0 		STR 	'--------------------------------------------------------------------------------', FIM_TEXTO
-linha1 		STR 	'   Score:                                                            Lifes: 3   ', FIM_TEXTO
-linha2 		STR 	'--------------------------------------------------------------------------------', FIM_TEXTO
-linha3 		STR 	'            BXBX                                           BXBX                 ', FIM_TEXTO
-linha4 		STR 	'                                    BXBXBX                                      ', FIM_TEXTO
-linha5 		STR 	'            BXBX                                           BXBX                 ', FIM_TEXTO
-linha6 		STR 	'                                    BXBXBX                                      ', FIM_TEXTO
-linha7 		STR 	'            BXBX                                           BXBX                 ', FIM_TEXTO
-linha8 		STR 	'                                    BXBXBX                                      ', FIM_TEXTO
-linha9 		STR 	'            BXBX                                           BXBX                 ', FIM_TEXTO
-linha10 	STR 	'                                    BXBXBX                                      ', FIM_TEXTO
-linha11 	STR 	'            BXBX                                           BXBX                 ', FIM_TEXTO
-linha12 	STR 	'                                    BXBXBX                                      ', FIM_TEXTO
-linha13 	STR 	'                                                                                ', FIM_TEXTO
-linha14 	STR 	'                                                                                ', FIM_TEXTO
-linha15 	STR 	'                                                                                ', FIM_TEXTO
-linha16 	STR 	'                                                                                ', FIM_TEXTO
-linha17 	STR 	'                                                                                ', FIM_TEXTO
-linha18 	STR 	'                                                                                ', FIM_TEXTO
-linha19 	STR 	'                                       o                                        ', FIM_TEXTO
-linha20 	STR 	'                                                                                ', FIM_TEXTO
-linha21 	STR 	'                                 -------------                                  ', FIM_TEXTO
-linha22 	STR 	'                                                                                ', FIM_TEXTO
-linha23		STR 	'--------------------------------------------------------------------------------', FIM_TEXTO
+
 TxtScoreFinal   STR     'PONTUACAO FINAL: ', '@'
 ; Tela de Game Over 
 GO_L1           STR     '########################################', '@'
@@ -75,7 +51,7 @@ WIN_L3          STR     '*           PARABENS!                  *', '@'
 WIN_L4          STR     '*          VOCE VENCEU!                *', '@'
 WIN_L5          STR     '*                                      *', '@'
 WIN_L6          STR     '****************************************', '@'
-game_state 	WORD	0d
+game_state 	WORD	1d
 Vidas       WORD    3d
 MsgGameOver STR     'GAME OVER', '@';
 ComboCount  WORD    1d      ; Multiplicador de pontos (inicia em 1)
@@ -149,26 +125,16 @@ ResetPosBola:  PUSH    R1
         	POP     R1
         	RET
 
-ResetBola:	PUSH 	R1
-			MOV 	R1, M[finalizou]
-			CMP 	R1, ON
-			JMP.z 	FimReset
-			CALL 	ResetPosBola
-FimReset:	POP 	R1
+ResetBola:	CALL ResetPosBola
 			RTI
 
 StartTimer: PUSH    R1
-
-			MOV 	R1, M[finalizou]
-			CMP 	R1, ON
-			JMP.z 	FimStart
-
         	MOV     R1, ON
         	MOV     M[ACTIVATE_TIMER], R1  ; ON = 1 -> ativa o timer
 			MOV 	M[game_state], R1
 			CALL 	movBola
 			CALL 	ConfigureTimer
-FimStart: 	POP     R1
+        	POP     R1
         	RTI
 
 
@@ -242,7 +208,7 @@ ClearScreen:    PUSH R1
 ; ShowGameOver: Tela customizada de derrota
 ;=========================================================================
 ShowGameOver:   CALL ClearScreen    ; 1. Limpa tudo
-
+                
                 ; 2. Desenha a Caixa (Linha por Linha)
                 ; Vamos desenhar a partir da linha 8, coluna 20 (centralizado)
                 
@@ -275,8 +241,6 @@ ShowGameOver:   CALL ClearScreen    ; 1. Limpa tudo
                 ; Trava o jogo
                 MOV R1, OFF
                 MOV M[game_state], R1
-				MOV R1, ON
-				MOV M[finalizou], R1
                 RET
 
 ;=========================================================================
@@ -313,8 +277,6 @@ ShowYouWin:     CALL ClearScreen
                 MOV R1, OFF
                 MOV M[game_state], R1
                 MOV M[ACTIVATE_TIMER], R1
-				MOV R1, ON
-				MOV M[finalizou], R1
                 RET
 
 ;=========================================================================
