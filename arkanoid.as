@@ -39,7 +39,7 @@ linha0 		STR 	'-----------------------------------------------------------------
 linha1 		STR 	'   Score: XYZ                                                        Lifes: 3   ', FIM_TEXTO
 linha2 		STR 	'--------------------------------------------------------------------------------', FIM_TEXTO
 linha3 		STR 	'            BXBX                                           BXBX                 ', FIM_TEXTO
-linha4 		STR 	'                                    ######                                      ', FIM_TEXTO
+linha4 		STR 	'                                    BXBXBX                                      ', FIM_TEXTO
 linha5 		STR 	'            BXBX                                           BXBX                 ', FIM_TEXTO
 linha6 		STR 	'                                    BXBXBX                                      ', FIM_TEXTO
 linha7 		STR 	'            BXBX                                           BXBX                 ', FIM_TEXTO
@@ -59,8 +59,9 @@ linha20 	STR 	'                                                                 
 linha21 	STR 	'                                 -------------                                  ', FIM_TEXTO
 linha22 	STR 	'                                                                                ', FIM_TEXTO
 linha23		STR 	'--------------------------------------------------------------------------------', FIM_TEXTO
-game_state 	WORD	1
-
+game_state 	WORD	1d
+Vidas       WORD    3d
+MsgGameOver STR     'GAME OVER', '@';
 ;------------------------------------------------------------------------------
 ; ZONA III: definicao de tabela de interrupções
 ;------------------------------------------------------------------------------
@@ -84,18 +85,31 @@ INT15   WORD    Timer
 		ORIG    0000h
 		JMP     Main
 
-Timer:  PUSH R1
+Timer:              PUSH R1
+                    ; 1. Verifica se o jogo já estava parado antes de começar
+                    MOV R1, M[game_state]
+                    CMP R1, OFF
+                    JMP.Z DeactivateTimer
 
-		CALL movBola
+                    ; 2. Move a bola (aqui dentro pode ocorrer o Game Over)
+                    CALL movBola
 
-		CALL ConfigureTimer
+                    ; 3. VERIFICAÇÃO CRUCIAL: O jogo acabou DENTRO do movBola?
+                    MOV R1, M[game_state]
+                    CMP R1, OFF
+                    JMP.Z DeactivateTimer  ; Se acabou, não reativa o timer!
 
-		POP R1
+                    ; 4. Se ainda está rolando, reativa o timer
+                    CALL ConfigureTimer
+                    JMP EndTimer
 
-		RTI
+DeactivateTimer:    MOV R1, OFF
+                    MOV M[ACTIVATE_TIMER], R1
+EndTimer:           POP R1
+                    RTI
 
 
-ResetBola:  PUSH    R1
+ResetPosBola:  PUSH    R1
         	PUSH    R2
         	PUSH    R3
 
@@ -112,14 +126,68 @@ ResetBola:  PUSH    R1
         	POP     R3
         	POP     R2
         	POP     R1
-        	RTI
+        	RET
+
+ResetBola:	CALL ResetPosBola
+			RTI
 
 StartTimer: PUSH    R1
         	MOV     R1, ON
         	MOV     M[ACTIVATE_TIMER], R1  ; ON = 1 -> ativa o timer
+			MOV 	M[game_state], R1
+			CALL 	movBola
+			CALL 	ConfigureTimer
         	POP     R1
         	RTI
 
+
+
+;======================================
+; AtualizaVidas: Escreve o valor de M[Vidas] na linha 1, coluna 76
+;======================================
+AtualizaVidas:  PUSH R1
+                PUSH R2
+                PUSH R3
+                
+                MOV  R1, M[Vidas]    ; Carrega número de vidas (ex: 3)
+                ADD  R1, '0'         ; Converte para ASCII (3 + 48 = '3')
+                
+                MOV  R2, 1d          ; Linha 1 (onde está o texto Lifes:)
+                MOV  R3, 76d         ; Coluna 76 (posição aproximada do número)
+                
+                CALL printchar       ; Escreve o número
+                
+                POP R3
+                POP R2
+                POP R1
+                RET
+
+;======================================
+; ShowGameOver: Mostra GAME OVER no meio da tela
+;======================================
+ShowGameOver:   PUSH R1
+                PUSH R2
+                PUSH R3
+                PUSH R4
+                
+                MOV  R4, MsgGameOver ; Endereço da string
+                MOV  R2, 12d         ; Linha (meio)
+                MOV  R3, 35d         ; Coluna (meio)
+                
+CicloGO:        MOV  R1, M[R4]       ; Lê caracter
+                CMP  R1, FIM_TEXTO
+                JMP.Z FimShowGO
+                
+                CALL printchar
+                INC  R4
+                INC  R3
+                JMP  CicloGO
+                
+FimShowGO:      POP R4
+                POP R3
+                POP R2
+                POP R1
+                RET
 
 ;======================================
 ; movBola: Movimenta a bola, verificando colisões com paredes e raquete
@@ -156,6 +224,7 @@ movBola: 	PUSH R1
 InverteX:	NEG R4 ; Inverte a direção X (-1 vira 1, 1 vira -1)
 			MOV M[dirXBola], R4
 
+
 			; Colisão com parede de cima (logo abaixo do placar)
 ContinuaYCheck: CMP R2, LINHA_TOPO
 				JMP.z 	InverteY
@@ -177,24 +246,51 @@ ContinuaYCheck: CMP R2, LINHA_TOPO
 			JMP InverteY
 
 			; Verificação de Game Over (bola caiu no chão)
-NaoBateuRaquete:	CMP R2, 21d
-					JMP.nz AtualizaPosicao
-					MOV R1, OFF
-					MOV M[ACTIVATE_TIMER], R1
-					MOV R1, CARAC_VAZIO
-					CALL printchar
-					JMP endMovB
+; Verificação de bola no chão
+NaoBateuRaquete:    CMP R2, 21d
+                    JMP.nz AtualizaPosicao ; Se não bateu no fundo, segue o jogo normal
 
-InverteY:			NEG R5 ; Inverte a direção Y
-					MOV M[dirYBola], R5
+                    ; --- BOLA CAIU NO FUNDO ---
+                    ; 1. Decrementa Vida
+                    MOV R1, M[Vidas]
+                    DEC R1
+                    MOV M[Vidas], R1      ; Salva nova vida na memória
+                    
+                    ; 2. Atualiza o placar
+                    CALL AtualizaVidas
+                    
+                    ; 3. Verifica se acabou as vidas (R1 ainda tem o valor da vida aqui)
+                    CMP R1, 0
+                    JMP.Z MorreuDeVez
+                    MOV R2, OFF
+					MOV M[ACTIVATE_TIMER], R2
+					MOV M[game_state], R2
+                    CALL ResetPosBola
+                    
+                    ; NÃO desligamos o timer. O jogo continua fluindo.
+                    JMP endMovB           ; Sai da rotina, esperando o próximo ciclo do timer
 
-			; Atualiza as coordenadas da bola com base na direção
+MorreuDeVez:        MOV R1, OFF
+                    MOV M[game_state], R1  ; Avisa a flag global que o jogo acabou
+                    
+                    MOV R1, CARAC_VAZIO    ; Apaga a bola que caiu
+                    CALL printchar
+                    
+                    CALL ShowGameOver      ; Mostra mensagem
+                    
+                    ; IMPORTANTE: Não faça POP R1 aqui, pois endMovB já faz os POPs de todos
+                    JMP endMovB            
+
+InverteY:           NEG R5 ; Inverte a direção Y
+                    MOV M[dirYBola], R5
+
+					; Atualiza as coordenadas da bola com base na direção
 AtualizaPosicao:	ADD R2, R5 ; novaLinha = linhaAtual + dirY
 					ADD R3, R4 ; novaColuna = colunaAtual + dirX
 					MOV M[linhaBola], R2
 					MOV M[colunaBola], R3
 
-			; Desenha a bola na nova posição
+					; Desenha a bola na nova posição
 					MOV R1, CARAC_BOLA
 					CALL printchar
 

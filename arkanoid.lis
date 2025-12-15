@@ -52,35 +52,44 @@
 	linha21                          86B8           STRING
 	linha22                          8709           STRING
 	linha23                          875A           STRING
-	timerActive                      87AB           STRING
+	game_state                       87AB         VARIABLE
+	Vidas                            87AC         VARIABLE
+	MsgGameOver                      87AD           STRING
 	INT0                             FE00         VARIABLE
 	INT1                             FE01         VARIABLE
 	INT2                             FE02         VARIABLE
 	INT3                             FE03         VARIABLE
 	INT15                            FE0F         VARIABLE
 	Timer                            0002            LABEL
-	fimTimer                         000D            LABEL
-	ResetBola                        000F            LABEL
-	StartTimer                       002A            LABEL
-	movBola                          0033            LABEL
-	InverteX                         004E            LABEL
-	ContinuaYCheck                   0051            LABEL
-	NaoBateuRaquete                  0067            LABEL
-	InverteY                         0075            LABEL
-	AtualizaPosicao                  0078            LABEL
-	endMovB                          0082            LABEL
-	MovRight                         0088            LABEL
-	endMovR                          00A7            LABEL
-	MovLeft                          00AB            LABEL
-	endMovL                          00CB            LABEL
-	printchar                        00CF            LABEL
-	Printf                           00DC            LABEL
-	Ciclo                            00DF            LABEL
-	EndPrintf                        00EA            LABEL
-	printMapa                        00EE            LABEL
-	PrintLoop                        00F7            LABEL
-	EndPrintLoop                     0105            LABEL
-	ConfigureTimer                   010B            LABEL
-	Main                             0118            LABEL
-	Cycle                            0124            LABEL
-	Halt                             0125            LABEL
+	DeactivateTimer                  0015            LABEL
+	EndTimer                         0019            LABEL
+	ResetPosBola                     001B            LABEL
+	ResetBola                        0032            LABEL
+	StartTimer                       0035            LABEL
+	AtualizaVidas                    0042            LABEL
+	ShowGameOver                     0053            LABEL
+	CicloGO                          005D            LABEL
+	FimShowGO                        0068            LABEL
+	movBola                          006D            LABEL
+	InverteX                         0088            LABEL
+	ContinuaYCheck                   008B            LABEL
+	NaoBateuRaquete                  00A1            LABEL
+	MorreuDeVez                      00BA            LABEL
+	InverteY                         00C6            LABEL
+	AtualizaPosicao                  00C9            LABEL
+	endMovB                          00D3            LABEL
+	MovRight                         00D9            LABEL
+	endMovR                          00F8            LABEL
+	MovLeft                          00FC            LABEL
+	endMovL                          011C            LABEL
+	printchar                        0120            LABEL
+	Printf                           012D            LABEL
+	Ciclo                            0130            LABEL
+	EndPrintf                        013B            LABEL
+	printMapa                        013F            LABEL
+	PrintLoop                        0148            LABEL
+	EndPrintLoop                     0156            LABEL
+	ConfigureTimer                   015C            LABEL
+	Main                             0167            LABEL
+	Cycle                            0173            LABEL
+	Halt                             0174            LABEL
